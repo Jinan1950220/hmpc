@@ -9,24 +9,25 @@
       <div class="login-head">
         <div class="logo"></div>
       </div>
-      <el-form class="login-form" ref="form" :model="user">
-        <el-form-item>
+      <el-form class="login-form" ref="myform" :model="user" :rules="rules">
+        <el-form-item prop="mobile">
           <el-input
             v-model.trim="user.mobile"
             placeholder="请输入手机号"
           ></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="code">
           <el-input
             v-model.trim="user.code"
             placeholder="请输入验证码"
           ></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-checkbox v-model="checked">我已阅读并同意用户协议和隐私条款</el-checkbox>
+        <el-form-item prop="agree">
+          <el-checkbox v-model="user.agree">我已阅读并同意用户协议和隐私条款</el-checkbox>
         </el-form-item>
         <el-form-item>
           <el-button
+            :loading="loginLoading"
             class="login-btn"
             type="primary"
             @click="hLogin"
@@ -38,52 +39,86 @@
 </template>
 
 <script>
-import ajax from '../../utils/request.js'
+import { userLogin } from '../../api/user.js'
 export default {
   name: 'Login',
   props: { },
   data () {
     // 双向绑定
     return {
-      user: {
-        mobile: '', // 手机号
-        code: '' // 验证码
+      rules: {
+        // 属性名，就是一类验证规则，可以自己起名字
+        // 属性值，是一个数组，每一个对象表示一种规则
+        mobile: [
+          // required 是必填项 message 提示信息 tigger 什么时候提示 blur 失去焦点
+          { required: true, message: '必须输入手机号', trigger: 'blur' },
+          { pattern: /^1[35789]\d{9}$/, message: '手机号格式不对', trigger: 'change' }
+        ],
+        code: [
+          { required: true, message: '必须输入验证码', trigger: 'blur' },
+          { pattern: /^\d{6}$/, message: '验证码格式不对', trigger: 'change' }
+        ],
+        agree: [
+          // value 当前值
+          // 验证通过 直接写callback()
+          // 验证不通过，callback(new Error('错误信息'))
+          {
+            validator: (rule, value, callback) => {
+              if (value) {
+              // 如果是勾选中 则验证通过  否则 else
+                callback()
+              } else {
+              // 如果不选中，返回错误信息
+                callback(new Error('请通过用户协议'))
+              }
+            },
+            trigger: 'change'
+          }
+        ]
       },
-      checked: false // 是否同意协议的选中状态
+      user: {
+        mobile: '13911111111', // 手机号
+        code: '246810', // 验证码
+        agree: false
+      },
+      loginLoading: false
     }
   },
   methods: {
-    hLogin () {
+    Login () {
       /**
        * 1.手机用户的信息
        * 2.监测是否同意
        * 3.根据接口文档要求 发送ajax请求
        */
-      if (this.user.mobile === '') {
-        return
-      }
-      if (this.user.code === '') {
-        return
-      }
-      if (this.checked === false) {
-        return
-      }
+      /**
+       * 在发请求之前 把this.loginLoding改为true
+       */
+      this.loginLoading = true
       /**
        * 发送ajax请求
        *  1.引入request.js
        *  2.发请求
        */
-      ajax({
-        method: 'post',
-        url: '/mp/v1_0/authorizations',
-        data: {
-          mobile: this.user.mobile,
-          code: this.user.code
-        }
-      }).then(res => {
+      // userLogin({mobile:1425,code:1234556}).then().catch()
+      userLogin(this.user.mobile, this.user.code).then(res => {
         console.log(res.data)
+        this.$message.success('登录成功了')
+        // 关闭loading状态
+        this.loginLoading = false
       }).catch(err => {
         console.log(err)
+        this.$message.error('登录出错了')
+        this.loginLoading = true
+      })
+    },
+    hLogin () {
+      console.log(this.$refs.myform)
+      this.$refs.myform.validate(valid => {
+        console.log('校验结果', valid)
+        if (valid) {
+          this.Login()
+        }
       })
     }
   }
