@@ -69,7 +69,7 @@ export default {
           // 验证通过 直接写callback()
           // 验证不通过，callback(new Error('错误信息'))
           {
-            validate: (rule, value, callback) => {
+            validator: (rule, value, callback) => {
               if (value) {
                 // 如果勾选中，验证通过
                 callback()
@@ -107,10 +107,18 @@ export default {
        */
       // userLogin({mobile:1425,code:1234556}).then().catch()
       userLogin(this.user.mobile, this.user.code).then(res => {
-        console.log(res.data)
+        console.log(res.data.data)
         this.$message.success('登录成功了')
         // 关闭loading状态
         this.loginLoading = false
+        // localStorage.setItem('userinfo',字符串)
+        /**
+         * 登陆成功后  获取到用户信息 并且保存在当地
+         * 在发请求时  获取到本地存储的token 在user.js中
+         */
+        localStorage.setItem('userInfo', JSON.stringify(res.data.data))
+        // 跳转到主页，通过代码方式跳转到主页
+        this.$router.push('/')
       }).catch(err => {
         console.log(err)
         this.$message.error('登录出错了')

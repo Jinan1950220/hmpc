@@ -10,7 +10,6 @@
       -->
       <div class="logo" :class="{minLogo:isCollapse}"></div>
       <!-- 菜单区域
-
       collapse:控制折叠效果的
         如果为true: 只显示图标，不显示文字，可以节省一定的宽度
         如果是false: 显示图标和文字
@@ -70,8 +69,8 @@
         <el-dropdown>
           <!-- 默认插槽：直接显示出来 -->
           <div class="avatar-wrap">
-            <img class="avatar" src="http://toutiao.meiduo.site/FrvifflobfNNRM9V_ZBTI2ZaTH4n" alt="">
-            <span>用户昵称</span>
+            <img class="avatar" :src="user.photo" alt="">
+            <span>{{user.name}}</span>
             <i class="el-icon-arrow-down el-icon--right"></i>
           </div>
           <!-- 具名插槽：设置下拉菜单的内容 -->
@@ -89,16 +88,24 @@
 </template>
 
 <script>
+import { userGetProfile } from '../../api/user.js'
 export default {
   name: 'Layout',
   props: { },
   data () {
     return {
+      user: null, // 补充数据项
       isCollapse: false // 默认侧边栏不折叠（展开）
     }
   },
   computed: { },
-  created () { },
+  created () {
+    // 请求用户信息，显示在顶部
+    userGetProfile().then(res => {
+      console.log(res)
+      this.user = res.data.data
+    })
+  },
   mounted () { }
 }
 </script>
