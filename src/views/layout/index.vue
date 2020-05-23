@@ -111,10 +111,6 @@ export default {
         this.user = res.data.data
       }).catch(err => {
         console.dir(err)
-        if (err.response.status === 401) {
-          alert('无权访问')
-          this.$router.push('/login')
-        }
       })
     }
   }
