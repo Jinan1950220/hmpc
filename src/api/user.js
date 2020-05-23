@@ -4,6 +4,7 @@
  */
 // 定义一个函数并导出
 // 传入手机号和验证码
+import { getUser } from '../utils/storsge.js'
 import ajax from '../utils/request.js'
 export const userLogin = (mobile, code) => {
   // 这个函数的返回结果是一个promise类型的数据
@@ -22,7 +23,7 @@ export const userLogin = (mobile, code) => {
  * 获取用户的身份信息
  */
 export const userGetProfile = () => {
-  const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+  const userInfo = getUser()
   // 请求接口
   return ajax({
     method: 'get',

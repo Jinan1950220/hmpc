@@ -39,6 +39,7 @@
 
 <script>
 import { userLogin } from '../../api/user.js'
+import { setUser } from '../../utils/storsge.js'
 export default {
   name: 'Login',
   props: { },
@@ -116,7 +117,7 @@ export default {
          * 登陆成功后  获取到用户信息 并且保存在当地
          * 在发请求时  获取到本地存储的token 在user.js中
          */
-        localStorage.setItem('userInfo', JSON.stringify(res.data.data))
+        setUser(res.data.data)
         // 跳转到主页，通过代码方式跳转到主页
         this.$router.push('/')
       }).catch(err => {

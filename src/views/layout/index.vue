@@ -94,7 +94,7 @@ export default {
   props: { },
   data () {
     return {
-      user: null, // 补充数据项
+      user: { }, // 补充数据项
       isCollapse: false // 默认侧边栏不折叠（展开）
     }
   },
@@ -104,6 +104,12 @@ export default {
     userGetProfile().then(res => {
       console.log(res)
       this.user = res.data.data
+    }).catch(err => {
+      console.dir(err)
+      if (err.response.status === 401) {
+        alert('无权访问')
+        this.$router.push('/login')
+      }
     })
   },
   mounted () { }
