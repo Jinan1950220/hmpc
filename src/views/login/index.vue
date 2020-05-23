@@ -4,7 +4,6 @@
       el-form 表单组件
       每个表单项都必须使用 el-form-item 组件包裹
      -->
-
     <div class="login-form-wrap">
       <div class="login-head">
         <div class="logo"></div>
@@ -47,28 +46,34 @@ export default {
     // 双向绑定
     return {
       rules: {
-        // 属性名，就是一类验证规则，可以自己起名字
+        // 属性名，就是一类验证规则，可以自己起名字最好与user里面的文字下面的一样
         // 属性值，是一个数组，每一个对象表示一种规则
         mobile: [
-          // required 是必填项 message 提示信息 tigger 什么时候提示 blur 失去焦点
-          { required: true, message: '必须输入手机号', trigger: 'blur' },
-          { pattern: /^1[35789]\d{9}$/, message: '手机号格式不对', trigger: 'change' }
+          // required 是必填项 message 提示信息 trigger 什么时候提示 blur 失去焦点
+          { required: true, message: '手机号不能为空!', trigger: 'blur' },
+          { pattern: /^1[35789]\d{9}$/, message: '手机号格式错误', trigger: 'blur' }
+          /**
+           * /^1[3579]\d{9}$/
+           * ^: 以什么开头 ^1: 表示一1开头
+           * $: 以什么结尾
+           * [35789]: 表示第二位是 3,5,7,8,9 中的一个
+           * \d{9}: 表示9个数字
+           */
         ],
         code: [
-          { required: true, message: '必须输入验证码', trigger: 'blur' },
-          { pattern: /^\d{6}$/, message: '验证码格式不对', trigger: 'change' }
+          { required: true, message: '验证码不能为空!', trigger: 'blur' },
+          { pattern: /^\d{6}$/, message: '验证码格式不正确!', trigger: 'blur' }
         ],
         agree: [
           // value 当前值
           // 验证通过 直接写callback()
           // 验证不通过，callback(new Error('错误信息'))
           {
-            validator: (rule, value, callback) => {
+            validate: (rule, value, callback) => {
               if (value) {
-              // 如果是勾选中 则验证通过  否则 else
+                // 如果勾选中，验证通过
                 callback()
               } else {
-              // 如果不选中，返回错误信息
                 callback(new Error('请通过用户协议'))
               }
             },
