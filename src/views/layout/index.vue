@@ -101,18 +101,23 @@ export default {
   computed: { },
   created () {
     // 请求用户信息，显示在顶部
-    userGetProfile().then(res => {
-      console.log(res)
-      this.user = res.data.data
-    }).catch(err => {
-      console.dir(err)
-      if (err.response.status === 401) {
-        alert('无权访问')
-        this.$router.push('/login')
-      }
-    })
+    this.setUserProfile()
   },
-  mounted () { }
+  mounted () { },
+  methods: {
+    setUserProfile () {
+      userGetProfile().then(res => {
+        console.log(res)
+        this.user = res.data.data
+      }).catch(err => {
+        console.dir(err)
+        if (err.response.status === 401) {
+          alert('无权访问')
+          this.$router.push('/login')
+        }
+      })
+    }
+  }
 }
 </script>
 
