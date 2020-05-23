@@ -3,12 +3,23 @@ import VueRouter from 'vue-router'
 // 導入登陸組件
 import Login from '../views/login/index.vue'
 import Layout from '../views/layout/index.vue'
+import Article from '../views/articles/index.vue'
+import AddArticle from '../views/articles/add.vue'
+import NotFound from '../views/404/index.vue'
 import { getUser } from '../utils/storsge.js'
 Vue.use(VueRouter)
 
 const routes = [
   { path: '/login', component: Login },
-  { path: '/', component: Layout }
+  {
+    path: '/',
+    component: Layout,
+    children: [
+      { path: '/articles', component: Article },
+      { path: '/addarticle', component: AddArticle }
+    ]
+  },
+  { path: '*', component: NotFound }
 ]
 
 const router = new VueRouter({

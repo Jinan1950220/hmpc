@@ -15,6 +15,7 @@
         如果是false: 显示图标和文字
       -->
       <el-menu
+          router
           default-active="/"
           class="nav-menu"
           background-color="#002033"
@@ -76,12 +77,19 @@
           <!-- 具名插槽：设置下拉菜单的内容 -->
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>设置</el-dropdown-item>
-            <el-dropdown-item>退出</el-dropdown-item>
+            <!--
+              并不是所有的组件都支持@click 可以添加native
+              <el-button> 可以用 是内部做了处理
+              如果不能用，可以添加一个   .native  就可以了
+              .native:原生的   修饰符的作用是把事件添加到原生的dom上
+            -->
+            <el-dropdown-item @click.native="hQuit">退出</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </el-header>
       <el-main class="main">
-        主体区域
+        <!-- 二级路由的出口 -->
+        <router-view></router-view>
       </el-main>
     </el-container>
   </el-container>
@@ -89,6 +97,7 @@
 
 <script>
 import { userGetProfile } from '../../api/user.js'
+import { delUser } from '../../utils/storsge.js'
 export default {
   name: 'Layout',
   props: { },
@@ -99,12 +108,41 @@ export default {
     }
   },
   computed: { },
+  // components: { MyCom1 },
   created () {
     // 请求用户信息，显示在顶部
     this.setUserProfile()
   },
   mounted () { },
   methods: {
+    hQuit () {
+      /**
+       * 实现用户退出,
+       * 1. 询问是否退出
+       * 2. 清除本地localstorage中的信息
+       * 3. 回去登录页
+       */
+      this.$confirm('就走了?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '退出成功!'
+        })
+        delUser()
+        this.$router.push('/login')
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '欢迎回来'
+        })
+      })
+    },
+    hClick () {
+      alert('11111')
+    },
     setUserProfile () {
       userGetProfile().then(res => {
         console.log(res)

@@ -18,4 +18,8 @@ const getUser = () => {
   // userinfo.token 当这个值为null  这个代码就挂了，当它为空对象{} 代码是好的
   return JSON.parse(localStorage.getItem(KEY)) || { }
 }
-export { setUser, getUser }
+
+const delUser = () => {
+  localStorage.removeItem(KEY)
+}
+export { setUser, getUser, delUser }
