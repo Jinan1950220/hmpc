@@ -28,13 +28,18 @@
           <el-input v-model="form.name"></el-input>
         </el-form-item>
         <el-form-item label="日期">
-          <el-col :span="11">
-            <el-date-picker type="date" placeholder="选择日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
-          </el-col>
-          <el-col class="line" :span="2">-</el-col>
-          <el-col :span="11">
-            <el-time-picker placeholder="选择时间" v-model="form.date2" style="width: 100%;"></el-time-picker>
-          </el-col>
+          <!-- type="daterange" range 区域 date 日期
+          value-format 绑定值得格式，不指定则绑定为date对象 -->
+          <div class="block">
+            <el-date-picker
+              v-model="form.date"
+              type="daterange"
+              value-format="yyyy-MM-dd"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期">
+            </el-date-picker>
+          </div>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit">立即创建</el-button>
@@ -44,7 +49,7 @@
     </el-card>
     <el-card style="margin-top:20px">
       <div slot="header" class="clearfix">
-        根据筛选条件查询到XXX条
+        根据筛选条件查询到{{total_count}}条数据，当前是第{{curPage}}页
       </div>
       <!--
         1. 列表的列  根据el-table-coiumn
@@ -54,33 +59,75 @@
           从每一个对象中取出属性名为prop值(data)的属性值
       -->
       <el-table
-        :data="tableData"
+        :data="articles"
         style="width: 100%">
         <el-table-column
-          prop="date"
-          label="封面"
-          width="180">
+          label="封面">
+          <template slot-scope="scope">
+            <!-- 图片 -->
+            <!-- scope.row 获取当前行的数据 -->
+            <!-- <div>{{scope.row.cover.images[0]}}</div> -->
+            <el-image
+            :src="scope.row.cover.images[0]"
+            style="width: 150px; height: 100px"
+            lazy
+            >
+              <div slot="placeholder" class="image-slot">
+                加载中<span class="dot">...</span>
+              </div>
+            </el-image>
+          </template>
         </el-table-column>
         <el-table-column
-          prop="name"
-          label="标题"
-          width="180">
+          prop="title"
+          label="标题">
         </el-table-column>
+        <!-- 由于后端回传的是数字，而我们要显示的是对应的字符串
+        所以，我们这不能直接使用status -->
         <el-table-column
-          prop="address"
           label="状态"
-          width="180">
+        >
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.status===0">草稿</el-tag>
+            <el-tag v-else-if="scope.row.status===1" type="info">待审核</el-tag>
+            <el-tag v-else-if="scope.row.status===2" type="success">审核通过</el-tag>
+            <el-tag v-else-if="scope.row.status===3" type="warning">审核失败</el-tag>
+            <el-tag v-else-if="scope.row.status===4" type="danger">已删除</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
-          prop="address"
-          label="发布时间"
-          width="180">
+          prop="pubdate"
+          label="发布时间">
         </el-table-column>
         <el-table-column
           prop="address"
           label="操作">
+          <!-- scope.$index 当前行的行索引（0开始）
+               scope.row 当前行数据
+          -->
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="primary"
+              @click="hEdit(scope.$index, scope.row)" icon="el-icon-edit" circle></el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              @click="hDelete(scope.$index, scope.row)" icon="el-icon-delete" circle></el-button>
+          </template>
         </el-table-column>
       </el-table>
+      <!--
+        1.total是总条数
+        2.current-change
+       -->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total_count"
+        :page-size="10"
+        @current-change="hPageChange">
+      </el-pagination>
     </el-card>
   </div>
 </template>
@@ -94,36 +141,15 @@ export default {
       form: {
         name: '',
         region: '',
-        date1: '',
-        date2: '',
+        date: '',
         delivery: false,
         type: [],
         resource: '',
         desc: ''
       },
-      tableData: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        },
-        {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
-        },
-        {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }
-      ],
-      articles: []
+      curPage: 1, // 当前要查询的数据
+      articles: [],
+      total_count: 0
     }
   },
   created () {
@@ -134,13 +160,26 @@ export default {
       console.log('submit!')
     },
     loadArticles () {
-      getArticles().then(res => {
+      getArticles({ page: this.curPage }).then(res => {
         console.log('获取的文章的文章', res)
         this.articles = res.data.data.results
+        this.total_count = res.data.data.total_count
       })
+    },
+    hEdit (index, row) {
+      console.log(index, row)
+    },
+    hDelete (index, row) {
+      console.log(index, row)
+    },
+    hPageChange (curPage) {
+      console.log(curPage)
+      this.curPage = curPage
+      this.loadArticles(curPage)
     }
   }
 }
+// 重看分页原理
 </script>
 
 <style scoped lang='less'></style>

@@ -34,7 +34,7 @@ const router = new VueRouter({
 //      next() 正常跳转，允许进入到to路由
 //      next(路由地址) 不允许to，而是去指定的路由地址
 router.beforeEach((to, from, next) => {
-  console.log('路由导航守卫', to, from, next)
+  // console.log('路由导航守卫', to, from, next)
   if (to.path === '/') {
     // 检查是否有登录的信息 看localstorage 有没有token
     const userInfo = getUser()

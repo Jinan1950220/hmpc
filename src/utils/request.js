@@ -19,7 +19,7 @@ instance.interceptors.request.use(function (config) {
   // Do something before request is sent
   // 在发送请求之前做点什么
   if (userInfo && userInfo.token) {
-    console.log('请求拦截器', Date.now(), config)
+    // console.log('请求拦截器', Date.now(), config)
     // 在这里给请求加headers,设置token
     config.headers.Authorization = 'Bearer ' + userInfo.token
   }
