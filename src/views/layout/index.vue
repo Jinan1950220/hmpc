@@ -14,6 +14,7 @@
         如果为true: 只显示图标，不显示文字，可以节省一定的宽度
         如果是false: 显示图标和文字
       -->
+      <!-- 这里缺注释 -->
       <el-menu
           router
           default-active="/"
@@ -139,9 +140,6 @@ export default {
           message: '欢迎回来'
         })
       })
-    },
-    hClick () {
-      alert('11111')
     },
     setUserProfile () {
       userGetProfile().then(res => {
