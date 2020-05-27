@@ -14,3 +14,21 @@ export const getArticles = (queryObj) => {
     params: queryObj
   })
 }
+export const getArticlesChannels = () => {
+  /**
+   * 获取文章频道
+   */
+  return ajax({
+    method: 'get',
+    url: '/mp/v1_0/channels'
+  })
+}
+export const deleteArticle = articleId => {
+  /**
+   * 删除文章
+   */
+  return ajax({
+    method: 'delete',
+    url: '/mp/v1_0/article/' + articleId
+  })
+}

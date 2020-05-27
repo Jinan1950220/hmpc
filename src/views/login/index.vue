@@ -91,7 +91,7 @@ export default {
     }
   },
   methods: {
-    Login () {
+    async Login () {
       /**
        * 1.手机用户的信息
        * 2.监测是否同意
@@ -107,27 +107,40 @@ export default {
        *  2.发请求
        */
       // userLogin({mobile:1425,code:1234556}).then().catch()
-      userLogin(this.user.mobile, this.user.code).then(res => {
-        console.log(res.data.data)
+      // userLogin(this.user.mobile, this.user.code).then(res => {
+      //   console.log(res.data.data)
+      //   this.$message.success('登录成功了')
+      //   // 关闭loading状态
+      //   this.loginLoading = false
+      //   // localStorage.setItem('userinfo',字符串)
+      //   /**
+      //    * 登陆成功后  获取到用户信息 并且保存在当地
+      //    * 在发请求时  获取到本地存储的token 在user.js中
+      //    */
+      //   setUser(res.data.data)
+      //   // 跳转到主页，通过代码方式跳转到主页
+      //   this.$router.push('/')
+      // }).catch(err => {
+      //   console.log(err)
+      //   this.$message.error('登录出错了')
+      //   this.loginLoading = false
+      // })
+      try {
+        const res = await userLogin(this.user.mobile, this.user.code)
+        // await 直接取出promise中的then（res）
         this.$message.success('登录成功了')
-        // 关闭loading状态
         this.loginLoading = false
-        // localStorage.setItem('userinfo',字符串)
-        /**
-         * 登陆成功后  获取到用户信息 并且保存在当地
-         * 在发请求时  获取到本地存储的token 在user.js中
-         */
         setUser(res.data.data)
-        // 跳转到主页，通过代码方式跳转到主页
         this.$router.push('/')
-      }).catch(err => {
-        console.log(err)
+      } catch (err) {
         this.$message.error('登录出错了')
-        this.loginLoading = true
-      })
+        console.log(err)
+        this.loginLoading = false
+      }
     },
     hLogin () {
       console.log(this.$refs.myform)
+      // valid 可以自己任意修改名字
       this.$refs.myform.validate(valid => {
         console.log('校验结果', valid)
         if (valid) {

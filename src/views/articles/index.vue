@@ -2,26 +2,26 @@
   <div class='article-container'>
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <el-breadcrumb separator="/">
-          <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-          <el-breadcrumb-item>内容管理</el-breadcrumb-item>
-        </el-breadcrumb>
+        <my-breadcrumb>内容管理</my-breadcrumb>
       </div>
       <el-form ref="form" :model="form" label-width="80px">
         <el-form-item label="状态">
-          <el-radio-group v-model="form.resource">
-            <el-radio label="全部"></el-radio>
-            <el-radio label="草稿"></el-radio>
-            <el-radio label="待审核"></el-radio>
-            <el-radio label="审核通过"></el-radio>
-            <el-radio label="审核失败"></el-radio>
-            <el-radio label="已删除"></el-radio>
+          <el-radio-group v-model="form.status">
+            <el-radio :label="null">全部</el-radio>
+            <el-radio :label="0">草稿</el-radio>
+            <el-radio :label="1">待审核</el-radio>
+            <el-radio :label="2">审核通过</el-radio>
+            <el-radio :label="3">审核失败</el-radio>
+            <el-radio :label="4">已删除</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="频道">
-          <el-select v-model="form.region" placeholder="请选择频道">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+          <el-select v-model="form.channelId" clearable placeholder="请选择频道">
+            <el-option
+            v-for="channels in channels"
+            :key="channels.id"
+            :label="channels.name"
+            :value="channels.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="活动名称">
@@ -42,8 +42,10 @@
           </div>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">立即创建</el-button>
-          <el-button>取消</el-button>
+          <el-button
+          :loading="loading"
+          type="primary"
+          @click="hQuery">查询</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -59,6 +61,7 @@
           从每一个对象中取出属性名为prop值(data)的属性值
       -->
       <el-table
+        v-loading="loading"
         :data="articles"
         style="width: 100%">
         <el-table-column
@@ -109,11 +112,11 @@
             <el-button
               size="mini"
               type="primary"
-              @click="hEdit(scope.$index, scope.row)" icon="el-icon-edit" circle></el-button>
+              @click="hEdit(scope.row)" icon="el-icon-edit" circle></el-button>
             <el-button
               size="mini"
               type="danger"
-              @click="hDelete(scope.$index, scope.row)" icon="el-icon-delete" circle></el-button>
+              @click="hDelete(scope.row)" icon="el-icon-delete" circle></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -122,6 +125,7 @@
         2.current-change
        -->
       <el-pagination
+       :disabled="loading"
         background
         layout="prev, pager, next"
         :total="total_count"
@@ -133,50 +137,103 @@
 </template>
 
 <script>
-import { getArticles } from '../../api/article.js'
+import MyBreadcrumb from '../../components/MyBreadcrumb.vue'
+import { getArticles, getArticlesChannels, deleteArticle } from '../../api/article.js'
 export default {
   name: 'ArticlesIndex',
   data () {
     return {
       form: {
-        name: '',
-        region: '',
-        date: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
+        date: null,
+        status: null,
+        channelId: null
       },
       curPage: 1, // 当前要查询的数据
       articles: [],
-      total_count: 0
+      total_count: 0,
+      channels: [],
+      loading: false
     }
   },
   created () {
     this.loadArticles()
+
+    this.loadChannels()
   },
   methods: {
-    onSubmit () {
-      console.log('submit!')
+    hQuery () {
+      // 重置密码
+      this.curPage = 1
+      this.loadArticles()
+    },
+    loadChannels () {
+      getArticlesChannels().then(res => {
+        console.log('频道', res)
+        this.channels = res.data.data.channels
+      })
     },
     loadArticles () {
-      getArticles({ page: this.curPage }).then(res => {
+      // 调用导入的方法
+      // 补充一个查询参数
+      // 分析后端接口 补充begin——pubdate， end——pubdate
+      const beginPubdate = this.form.date && this.form.date[0]
+      const endPubdate = this.form.date && this.form.date[1]
+      // 如果用户选择了日期范围，则传入即可
+      // 如果用户没有选择日期范围，则要把参数设置为null --axios会把参数值为null的数据过滤掉，既不传入给后
+      this.loading = true
+      getArticles({
+        channels_id: this.form.channelId || null,
+        begin_pubdate: beginPubdate,
+        end_pubdate: endPubdate,
+        page: this.curPage,
+        status: this.form.status
+      }).then(res => {
         console.log('获取的文章的文章', res)
         this.articles = res.data.data.results
         this.total_count = res.data.data.total_count
+        this.loading = false
+      }).catch(err => {
+        console.log(err)
       })
+      this.loading = true
     },
-    hEdit (index, row) {
-      console.log(index, row)
+    hEdit (row) {
+      const id = row.id.toString()
+      console.log(id)
+      this.$router.push('/editarticle/' + id)
     },
-    hDelete (index, row) {
-      console.log(index, row)
+    hDelete (row) {
+      console.log('要删除的数据', row)
+      const id = row.id.toString()
+      console.log('获取文章的id是', id)
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteArticle(id).then(res => {
+          console.log(res)
+          this.$message({
+            message: '删除成功',
+            type: 'success'
+          })
+        }).catch(err => {
+          console.log(err)
+          this.$message({
+            message: '删除失败',
+            type: 'error'
+          })
+        })
+      }).catch(() => {})
     },
     hPageChange (curPage) {
       console.log(curPage)
       this.curPage = curPage
       this.loadArticles(curPage)
     }
+  },
+  components: {
+    MyBreadcrumb
   }
 }
 // 重看分页原理

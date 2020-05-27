@@ -5,6 +5,7 @@ import Login from '../views/login/index.vue'
 import Layout from '../views/layout/index.vue'
 import Article from '../views/articles/index.vue'
 import AddArticle from '../views/articles/add.vue'
+import EditArticle from '../views/articles/edit.vue'
 import NotFound from '../views/404/index.vue'
 import { getUser } from '../utils/storsge.js'
 Vue.use(VueRouter)
@@ -16,7 +17,8 @@ const routes = [
     component: Layout,
     children: [
       { path: '/articles', component: Article },
-      { path: '/addarticle', component: AddArticle }
+      { path: '/addarticle', component: AddArticle },
+      { path: '/editarticle/:id', component: EditArticle }
     ]
   },
   { path: '*', component: NotFound }
