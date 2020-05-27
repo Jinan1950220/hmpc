@@ -139,12 +139,13 @@ export default {
       }
     },
     hLogin () {
-      console.log(this.$refs.myform)
+      // console.log(this.$refs.myform)
       // valid 可以自己任意修改名字
       this.$refs.myform.validate(valid => {
         console.log('校验结果', valid)
         if (valid) {
           this.Login()
+          // console.log(this.Login())
         }
       })
     }

@@ -143,7 +143,7 @@ export default {
     },
     setUserProfile () {
       userGetProfile().then(res => {
-        console.log(res)
+        // console.log(res)
         this.user = res.data.data
       }).catch(err => {
         console.dir(err)
