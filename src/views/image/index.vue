@@ -43,14 +43,18 @@
           name="image"
           :on-success="hUploadSuccess"
           :before-upload="beforeAvatarUpload">
-          <!-- 如果当前有预览地址，就说明上传成功 -->
-          <img v-if="imageSrc" :src="imageSrc" class="avatar">
+          <!-- 如果当前有预览地址，就说明上传成功
+              给用户展示这张图，用户成功看到这张图，关闭整个上传框
+              图片的onload事件
+              --当你设置图片的src浏览器，浏览器回去请求图片的资源当图片请求回来之后，会有一个事件触发出来 就是 onload
+          -->
+          <el-image @load="hLoadImageOK" v-if="imageSrc" :src="imageSrc" class="avatar"></el-image>
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-dialog>
       <!-- 图片区 -->
       <el-row :gutter="10" style="margin-top:10px">
-        <el-col v-for="image in images"
+        <el-col v-for="(image, idx) in images"
         :key="image.id"
         class="img_item" :xs="12" :sm="6" :md="6" :lg="4">
           <el-image
@@ -59,13 +63,17 @@
           fit="cover"></el-image>
           <!-- option只在全部中出现，而在收藏选项卡 不可见-->
           <div class="option" v-show="!collect">
-            <span class="el-icon-star-off" :style="{color:image.is_collected ? 'red' : '#fff'}"></span>
-            <span class="el-icon-delete"></span>
+            <span
+            @click="hSwitchCollect(image)"
+            class="el-icon-star-off"
+            :style="{color:image.is_collected ? 'red' : '#fff'}"></span>
+            <span class="el-icon-delete" @click="hDelete(image.id, idx)"></span>
           </div>
         </el-col>
       </el-row>
       <!-- 页码 -->
       <el-pagination
+        :hide-on-single-page="true"
         background
         layout="prev, pager, next"
         :total="total_count"
@@ -78,7 +86,7 @@
 
 <script>
 import MyBreadcrumb from '../../components/MyBreadcrumb'
-import { getImages } from '../../api/image.js'
+import { getImages, switchCollect, deleteImage } from '../../api/image.js'
 import { getUser } from '../../utils/storsge.js'
 export default {
   name: 'ImageIndex',
@@ -152,9 +160,56 @@ export default {
     hUploadSuccess (res) {
       console.log(res)
       // 保存上传之后的图片地址
+      // 他会显示出来给用户看
       this.imageSrc = res.data.url
       this.$message.success('上传素材成功')
       this.loadImages()
+    },
+    hLoadImageOK () {
+      // alert('我看到你了')
+      setTimeout(() => {
+        this.dialogVisible = false
+        this.imageSrc = null
+      }, 2000)
+    },
+    // 切换收藏
+    async hSwitchCollect (image) {
+      // alert('1')
+      // switchCollect(图片id，是否收藏)
+      // switchCollect(image.id)
+      const { id, is_collected } = image
+      console.log(id, is_collected, image, switchCollect)
+      try {
+        await switchCollect(id, !is_collected)
+        // 如果代码成功到了这里 说明ajax是成功的
+        this.$message.success('操作成功')
+        // 更新视图
+        // --方案1.整个更新数据，就是更新请求
+        // this.loadImages()
+        // --方案2.只更新当前图片数据项
+        image.is_collected = !is_collected
+      } catch {
+        this.$message.error('操作失败')
+      }
+    },
+    // 删除图片
+    hDelete (id, idx) {
+      // id 图片的编号
+      // idx 这张图在当前images的下标
+      this.$confirm('确定删除?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        try {
+          await deleteImage(id)
+          this.$message.success('删除成功')
+          // 从数组中this.images中的第dix开始 删除一项
+          this.images.splice(idx, 1)
+        } catch {
+          this.$message.error('删除失败')
+        }
+      }).catch(() => {})
     }
   }
 }
@@ -183,6 +238,11 @@ export default {
 .avatar-uploader {
     text-align: center;
 }
+.avatar {
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+  }
 .avatar-uploader-icon {
     font-size: 28px;
     color: #8c939d;
