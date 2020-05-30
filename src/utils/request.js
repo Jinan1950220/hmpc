@@ -20,7 +20,7 @@ const instance = axios.create({
     // 所以使用try -catch 来捕获异常
     // 如果没有遇到错误，则返回JSONbig处理之后的数据
     try {
-      return JSONbig.parse(data)
+      return JSONbig.parse(data || '{}')
     } catch (err) {
       console.log('JSONbig转换出错', err)
       return data

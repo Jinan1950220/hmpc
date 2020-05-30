@@ -29,6 +29,21 @@ export const deleteArticle = articleId => {
    */
   return ajax({
     method: 'delete',
-    url: '/mp/v1_0/article/' + articleId
+    url: '/mp/v1_0/articles/' + articleId
+  })
+}
+
+/**
+ * @param {*} isDraft 是否是草稿
+ * @param {*} article
+ */
+export const addArticle = (isDraft, article) => {
+  return ajax({
+    method: 'post',
+    url: '/mp/v1_0/articles',
+    params: {
+      darft: isDraft
+    },
+    data: article
   })
 }

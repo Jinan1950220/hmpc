@@ -136,12 +136,12 @@ export default {
       }
     },
     hPageChange (curPage) {
-      console.log(curPage)
+      // console.log(curPage)
       this.cur_page = curPage
       this.loadImages(curPage)
     },
     hCollectChange () {
-      console.log(this.collect)
+      // console.log(this.collect)
       this.loadImages()
     },
     beforeAvatarUpload (file) {
@@ -178,7 +178,8 @@ export default {
       // switchCollect(图片id，是否收藏)
       // switchCollect(image.id)
       const { id, is_collected } = image
-      console.log(id, is_collected, image, switchCollect)
+      // 复习解构赋值~~~~~~~~~~~~~~~~~~~~~~~~~~
+      // console.log(id, is_collected, image, switchCollect)
       try {
         await switchCollect(id, !is_collected)
         // 如果代码成功到了这里 说明ajax是成功的

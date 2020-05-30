@@ -217,6 +217,7 @@ export default {
             message: '删除成功',
             type: 'success'
           })
+          this.loadArticles()
         }).catch(err => {
           console.log(err)
           this.$message({
