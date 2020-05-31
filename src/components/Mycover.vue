@@ -2,7 +2,7 @@
 <div class="my-cover">
 <!-- 图片按钮 -->
     <div class="btn_img" @click="openDialog()">
-        <img src="../assets/default.png" />
+        <img :src="coverImageUrl" />
     </div>
     <!-- 对话框 -->
     <el-dialog :append-to-body=true :visible.sync="dialogVisible" width="720px">
@@ -56,14 +56,14 @@
                 图片的onload事件
                 --当你设置图片的src浏览器，浏览器回去请求图片的资源当图片请求回来之后，会有一个事件触发出来 就是 onload
             -->
-            <el-image @load="hLoadImageOK" v-if="imageSrc" :src="imageSrc" class="avatar"></el-image>
+            <el-image v-if="imageSrc" :src="imageSrc" class="avatar"></el-image>
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-tab-pane>
         </el-tabs>
         <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="hConfirmImage">确 定</el-button>
         </span>
     </el-dialog>
 </div>
@@ -77,6 +77,8 @@ export default {
   props: { },
   data () {
     return {
+      // 图片按钮上的图片
+      coverImageUrl: '../assets/default.png',
       // 当前tabs组件激活的选项卡的name属性的值
       activeName: 'image',
       images: [],
@@ -101,6 +103,10 @@ export default {
     openDialog () {
       this.dialogVisible = true
       this.loadImages()
+      // 重置
+      this.activeName = 'image'
+      this.imageSrc = null
+      this.selectedImageUrl = null
     },
     async loadImages () {
       // getImages().then(res => {
@@ -151,10 +157,35 @@ export default {
       // 他会显示出来给用户看
       this.imageSrc = res.data.url
       this.$message.success('上传素材成功')
-      this.loadImages()
+    },
+    hConfirmImage () {
+      /**
+       * 1.校验，根据当前所处的不同tab选项卡，做不同判断
+       * 2.
+       */
+      console.log(this.activeName)
+      if (this.activeName === 'image') {
+        if (!this.selectedImageUrl) {
+          this.$message.warning('请先选中一张图片')
+          return
+        } else {
+          // 把你选中的图显示在图片按钮上
+          this.coverImageUrl = this.selectedImageUrl
+        }
+      } else if (this.activeName === 'image') {
+        if (!this.selectedImageUrl) {
+          this.$message.warning('请先选中一张图片')
+          return
+        } else {
+          // 把你选中的图显示在图片按钮上
+          this.coverImageUrl = this.selectedImageUrl
+        }
+      }
+      this.dialogVisible = false
     }
   }
 }
+
 </script>
 
 <style scoped lang='less'>
