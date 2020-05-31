@@ -19,7 +19,7 @@ export default {
   props: ['value'], // 用来获取初始值
   data () {
     return {
-      ChannelId: '',
+      ChannelId: this.value,
       channels: []
     }
   },
@@ -37,6 +37,12 @@ export default {
     },
     hSelectChange (val) {
       this.$emit('input', val)
+    }
+  },
+  watch: {
+    // 如果value值变化则直接赋值给ChannlId（v-model中的数据）
+    value () {
+      this.ChannelId = this.value
     }
   }
 }

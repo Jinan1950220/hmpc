@@ -47,3 +47,30 @@ export const addArticle = (isDraft, article) => {
     data: article
   })
 }
+
+/**
+ * 获取文章详细信息
+ * @param {*} id文章编号
+ */
+export const getArticle = id => {
+  return ajax({
+    method: 'get',
+    url: 'mp/v1_0/articles/' + id
+  })
+}
+
+/**
+ *
+ * @param {*} id 文章编号
+ * @param {*} data 修改数据
+ */
+export const modArticle = (id, data) => {
+  return ajax({
+    method: 'put',
+    url: '/mp/v1_0/articles/' + id,
+    params: {
+      draft: false
+    },
+    data: data
+  })
+}

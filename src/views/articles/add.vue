@@ -19,6 +19,7 @@
           <el-radio :label="-1">自动</el-radio>
         </el-radio-group>
       </el-form-item>
+      <!-- 封面组件存在的价值是对封面图片进行赋值 -->
       <el-form-item v-if="article.cover.type > 0" label="封面">
         <el-row :gutter="10">
           <el-col v-for="(item,idx) in article.cover.type" :key="idx" :xs="12" :sm="6" :md="6" :lg="4"><my-cover v-model="article.cover.images[idx]"></my-cover>
