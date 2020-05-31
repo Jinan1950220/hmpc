@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 // 導入登陸組件
 import Login from '../views/login/index.vue'
+import Home from '../views/home/index.vue'
 import Layout from '../views/layout/index.vue'
 import Article from '../views/articles/index.vue'
 import AddArticle from '../views/articles/add.vue'
@@ -17,6 +18,7 @@ const routes = [
     path: '/',
     component: Layout,
     children: [
+      { path: '/', component: Home },
       { path: '/articles', component: Article },
       { path: '/addarticle', component: AddArticle },
       { path: '/editarticle/:id', component: EditArticle },

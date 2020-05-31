@@ -15,7 +15,7 @@
             <el-radio :label="4">已删除</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="频道">
+        <!-- <el-form-item label="频道">
           <el-select v-model="form.channelId" clearable placeholder="请选择频道">
             <el-option
             v-for="channels in channels"
@@ -23,7 +23,8 @@
             :label="channels.name"
             :value="channels.id"></el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
+        <my-channels v-model="form.channelId"></my-channels>
         <el-form-item label="活动名称">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
@@ -137,8 +138,9 @@
 </template>
 
 <script>
+import MyChannels from '../../components/MyChannels v-model.vue'
 import MyBreadcrumb from '../../components/MyBreadcrumb.vue'
-import { getArticles, getArticlesChannels, deleteArticle } from '../../api/article.js'
+import { getArticles, deleteArticle } from '../../api/article.js'
 export default {
   name: 'ArticlesIndex',
   data () {
@@ -157,8 +159,7 @@ export default {
   },
   created () {
     this.loadArticles()
-
-    this.loadChannels()
+    // this.loadChannels()
   },
   methods: {
     hQuery () {
@@ -166,12 +167,12 @@ export default {
       this.curPage = 1
       this.loadArticles()
     },
-    loadChannels () {
-      getArticlesChannels().then(res => {
-        console.log('频道', res)
-        this.channels = res.data.data.channels
-      })
-    },
+    // loadChannels () {
+    //   getArticlesChannels().then(res => {
+    //     console.log('频道', res)
+    //     this.channels = res.data.data.channels
+    //   })
+    // },
     loadArticles () {
       // 调用导入的方法
       // 补充一个查询参数
@@ -234,7 +235,8 @@ export default {
     }
   },
   components: {
-    MyBreadcrumb
+    MyBreadcrumb,
+    MyChannels
   }
 }
 // 重看分页原理

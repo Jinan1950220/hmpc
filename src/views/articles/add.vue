@@ -19,7 +19,7 @@
           <el-radio :label="-1">自动</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="频道" prop="channel_id">
+      <!-- <el-form-item label="频道" prop="channel_id">
         <el-select v-model="article.channel_id" placeholder="请选择频道">
           <el-option
           v-for="channel in channels"
@@ -27,7 +27,8 @@
           :label="channel.name"
           :value="channel.id"></el-option>
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
+      <my-channels v-model="article.channel_id"></my-channels>
       <el-form-item>
         <el-button type="primary" @click="hAddArticle(false)">发表</el-button>
         <el-button type="primary" @click="hAddArticle(true)">存入草稿</el-button>
@@ -44,8 +45,9 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 // 导入组件
 import { quillEditor } from 'vue-quill-editor'
+import MyChannels from '../../components/MyChannels v-model.vue'
 import MyBreadcrumb from '../../components/MyBreadcrumb.vue'
-import { getArticlesChannels, addArticle } from '../../api/article.js'
+import { addArticle } from '../../api/article.js'
 export default {
   name: 'AddArticle',
   data () {
@@ -63,7 +65,7 @@ export default {
           { required: true, message: '请选择文章频道', trigger: 'blur' }
         ]
       },
-      channels: [], // 频道列表
+      // channels: [], // 频道列表
       article: {
         title: 'test标题', // 标题
         channel_id: '', // 频道id
@@ -91,7 +93,7 @@ export default {
     }
   },
   created () {
-    this.loadChannels()
+    // this.loadChannels()
   },
   /**
    * 1.装请求接口
@@ -132,20 +134,21 @@ export default {
           }
         }
       })
-    },
-    async loadChannels () {
-      try {
-        const result = await getArticlesChannels()
-        console.log(result)
-        this.channels = result.data.data.channels
-      } catch (err) {
-        console.log(err)
-      }
     }
+    // async loadChannels () {
+    //   try {
+    //     const result = await getArticlesChannels()
+    //     console.log(result)
+    //     this.channels = result.data.data.channels
+    //   } catch (err) {
+    //     console.log(err)
+    //   }
+    // }
   },
   components: {
     MyBreadcrumb,
-    quillEditor
+    quillEditor,
+    MyChannels
   }
 }
 </script>
