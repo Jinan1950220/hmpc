@@ -70,6 +70,7 @@
 </template>
 
 <script>
+import defaultImg from '../assets/default.png'
 import { getUser } from '../utils/storsge.js'
 import { getImages } from '../api/image.js'
 export default {
@@ -78,7 +79,7 @@ export default {
   data () {
     return {
       // 图片按钮上的图片
-      coverImageUrl: '../assets/default.png',
+      coverImageUrl: defaultImg,
       // 当前tabs组件激活的选项卡的name属性的值
       activeName: 'image',
       images: [],
@@ -172,7 +173,7 @@ export default {
           // 把你选中的图显示在图片按钮上
           this.coverImageUrl = this.selectedImageUrl
         }
-      } else if (this.activeName === 'image') {
+      } else if (this.activeName === 'upload') {
         if (!this.selectedImageUrl) {
           this.$message.warning('请先选中一张图片')
           return
