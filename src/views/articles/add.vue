@@ -11,13 +11,19 @@
         <quill-editor type="textarea" v-model="article.content" :options="editorOption"></quill-editor>
       </el-form-item>
       <el-form-item label="封面">
-        <el-radio-group v-model="article.cover.type">
+        <el-radio-group @change="article.cover.image=[]" v-model="article.cover.type">
           <!-- 根据后端接口 -->
           <el-radio :label="1">单图</el-radio>
           <el-radio :label="3">三图</el-radio>
           <el-radio :label="0">无图</el-radio>
           <el-radio :label="-1">自动</el-radio>
         </el-radio-group>
+      </el-form-item>
+      <el-form-item v-if="article.cover.type > 0" label="封面">
+        <el-row :gutter="10">
+          <el-col v-for="(item,idx) in article.cover.type" :key="idx" :xs="12" :sm="6" :md="6" :lg="4"><my-cover v-model="article.cover.images[idx]"></my-cover>
+          </el-col>
+        </el-row>
       </el-form-item>
       <!-- <el-form-item label="频道" prop="channel_id">
         <el-select v-model="article.channel_id" placeholder="请选择频道">
@@ -47,6 +53,7 @@ import 'quill/dist/quill.bubble.css'
 import { quillEditor } from 'vue-quill-editor'
 import MyChannels from '../../components/MyChannels v-model.vue'
 import MyBreadcrumb from '../../components/MyBreadcrumb.vue'
+import MyCover from '../../components/Mycover.vue'
 import { addArticle } from '../../api/article.js'
 export default {
   name: 'AddArticle',
@@ -71,7 +78,7 @@ export default {
         channel_id: '', // 频道id
         content: '敲代码了', // 文章内容
         cover: {
-          type: 0, // 封面的图片个数
+          type: '', // 封面的图片个数
           images: [] // 封面的地址
         }
       },
@@ -148,7 +155,8 @@ export default {
   components: {
     MyBreadcrumb,
     quillEditor,
-    MyChannels
+    MyChannels,
+    MyCover
   }
 }
 </script>
