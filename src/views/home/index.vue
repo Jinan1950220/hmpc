@@ -2,7 +2,7 @@
   <div class=''>
       主页
       <div>
-        <my-cover></my-cover>
+        <my-cover v-model="imgSrc"></my-cover>
       </div>
       <!-- 子组件 -->
       <!-- <my-channels @hChange="hChannels"></my-channels> -->
@@ -19,7 +19,8 @@ export default {
   data () {
     return {
     //   channels_id: '',
-      channels_id_vmodel: ''
+      channels_id_vmodel: '',
+      imgSrc: ''
     }
   },
   components: {

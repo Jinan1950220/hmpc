@@ -2,7 +2,7 @@
 <div class="my-cover">
 <!-- 图片按钮 -->
     <div class="btn_img" @click="openDialog()">
-        <img :src="coverImageUrl" />
+        <img :src="value || coverImageUrl" />
     </div>
     <!-- 对话框 -->
     <el-dialog :append-to-body=true :visible.sync="dialogVisible" width="720px">
@@ -75,7 +75,7 @@ import { getUser } from '../utils/storsge.js'
 import { getImages } from '../api/image.js'
 export default {
   name: 'MyCover',
-  props: { },
+  props: ['value'],
   data () {
     return {
       // 图片按钮上的图片
@@ -97,9 +97,6 @@ export default {
       }
     }
   },
-  computed: { },
-  created () { },
-  mounted () { },
   methods: {
     openDialog () {
       this.dialogVisible = true
@@ -172,14 +169,16 @@ export default {
         } else {
           // 把你选中的图显示在图片按钮上
           this.coverImageUrl = this.selectedImageUrl
+          this.$emit('input', this.selectedImageUrl)
         }
       } else if (this.activeName === 'upload') {
-        if (!this.selectedImageUrl) {
-          this.$message.warning('请先选中一张图片')
+        if (!this.imageSrc) {
+          this.$message.warning('请先上传一张图片')
           return
         } else {
           // 把你选中的图显示在图片按钮上
-          this.coverImageUrl = this.selectedImageUrl
+          this.coverImageUrl = this.imageSrc
+          this.$emit('input', this.coverImageUrl)
         }
       }
       this.dialogVisible = false
