@@ -14,18 +14,18 @@
       -->
       <el-table
         v-loading="loading"
-        :data="comment"
+        :data="comments"
         style="width: 100%">
         <el-table-column
           prop="title"
           label="文章标题">
         </el-table-column>
         <el-table-column
-          prop="title"
+          prop="total_comment_count"
           label="总评论数">
         </el-table-column>
         <el-table-column
-          prop="title"
+          prop="fans_comment_count"
           label="粉丝评论数">
         </el-table-column>
         <!-- 由于后端回传的是数字，而我们要显示的是对应的字符串
@@ -34,11 +34,8 @@
           label="评论状态"
         >
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.status===0">草稿</el-tag>
-            <el-tag v-else-if="scope.row.status===1" type="info">待审核</el-tag>
-            <el-tag v-else-if="scope.row.status===2" type="success">审核通过</el-tag>
-            <el-tag v-else-if="scope.row.status===3" type="warning">审核失败</el-tag>
-            <el-tag v-else-if="scope.row.status===4" type="danger">已删除</el-tag>
+            <el-tag v-if="scope.row.comment_status">关闭</el-tag>
+            <el-tag type="success" v-else>打开</el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -49,13 +46,15 @@
           -->
           <template slot-scope="scope">
             <el-button
+              v-if="scope.row.comment_status"
               size="mini"
               type="primary"
-              @click="hCLoseComment(scope.row)" circle>关闭评论</el-button>
+              @click="hToggleComment(scope.row)">打开评论</el-button>
             <el-button
+              v-else
               size="mini"
               type="danger"
-              @click="hOpenComment(scope.row)" circle>打开评论</el-button>
+              @click="hToggleComment(scope.row)">关闭评论</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -68,7 +67,7 @@
         background
         layout="prev, pager, next"
         :total="total_count"
-        :page-size="10"
+        :page-size="per_page"
         @current-change="hPageChange">
       </el-pagination>
     </el-card>
@@ -78,24 +77,48 @@
 
 <script>
 import MyBreadcrumb from '../../components/MyBreadcrumb.vue'
+import { getComments, modCommentStatus } from '../../api/comments.js'
 export default {
   name: 'ComentIndex',
   data () {
     return {
       loading: false,
       total_count: 50,
-      comment: []
+      comments: [],
+      page: 1,
+      per_page: 10
     }
   },
   computed: { },
-  created () { },
+  created () {
+    this.loadComment()
+  },
   mounted () { },
   methods: {
-    hCLoseComment () {
+    async hToggleComment (comment) {
+      console.log(comment)
+      console.log(modCommentStatus)
+      try {
+        await modCommentStatus(comment.id.toString(), !comment.comment_status)
+        comment.comment_status = !comment.comment_status
+        this.$message.success('操作成功')
+      } catch (err) {
+        console.log(err)
+        this.$message.error('操作失败')
+      }
     },
-    hOpenComment () {
+    hPageChange (page) {
+      // 他会自动传入当前的页码
+      // 更新页码
+      this.page = page
+      // 重发请求
+      this.loadComment()
     },
-    hPageChange () {
+    async loadComment () {
+      const result = await getComments(this.page, this.per_page)
+      console.log(result)
+      this.comments = result.data.data.results
+      this.total_count = result.data.data.total_count
     }
   },
   components: {
