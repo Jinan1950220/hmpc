@@ -10,6 +10,7 @@ import EditArticle from '../views/articles/edit.vue'
 import Image from '../views/image/index.vue'
 import Comment from '../views/comment/index.vue'
 import Fans from '../views/fans/index.vue'
+import Settings from '../views/settings/index.vue'
 import NotFound from '../views/404/index.vue'
 import { getUser } from '../utils/storsge.js'
 Vue.use(VueRouter)
@@ -26,7 +27,8 @@ const routes = [
       { path: '/editarticle/:id', component: EditArticle },
       { path: '/image', component: Image },
       { path: '/comment', component: Comment },
-      { path: '/fans', component: Fans }
+      { path: '/fans', component: Fans },
+      { path: '/settings', component: Settings }
     ]
   },
   { path: '*', component: NotFound }
