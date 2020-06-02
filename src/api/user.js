@@ -38,3 +38,35 @@ export const userGetProfile = () => {
     // }
   })
 }
+
+/**
+ * 修改用户信息
+ * @param {*} name 姓名
+ * @param {*} email 邮箱
+ * @param {*} info 介绍
+ */
+// export const modUserProfile = (name, email, info) => {
+
+/**
+ * @param {*} data {name,email,info}
+ * 直接传入一个对象
+ */
+export const modUserProfile = data => {
+  return ajax({
+    method: 'patch',
+    url: '/mp/v1_0/user/profile',
+    data
+  })
+}
+
+/**
+ * 修改用户头像
+ * @param {*} formdata 是一个formData格式的对象
+ */
+export const modUserImage = (formData) => {
+  return ajax({
+    method: 'patch',
+    url: '/mp/v1_0/user/photo',
+    data: formData
+  })
+}

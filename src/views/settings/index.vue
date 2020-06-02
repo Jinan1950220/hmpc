@@ -1,5 +1,6 @@
 <template>
   <div class='setting-container'>
+    <button @click="hTestEventBus">测试</button>
     <el-card>
       <div slot="header">
         <!-- 面包屑路径导航 -->
@@ -32,6 +33,10 @@
         </el-col>
         <el-col :span="12">
           <!-- 上传组件 action必须属性-->
+            <!-- :http-request="uploadPhoto"
+            在修改用户头像时 后端接口是patch方式 而el-upload默认支持post方式上传
+            所以这里要启用el-upload的系定义上传属性:http-request="uploadPhoto"他会
+            覆盖原来的方式-->
           <el-upload
             class="avatar-uploader"
             action=""
@@ -49,7 +54,7 @@
 
 <script>
 import MyBreadcrumb from '../../components/MyBreadcrumb'
-import { userGetProfile } from '../../api/user'
+import { userGetProfile, modUserProfile, modUserImage } from '../../api/user'
 export default {
   name: 'my-setting',
   data () {
@@ -73,10 +78,51 @@ export default {
   methods: {
     async loadUserInfo () {
       const result = await userGetProfile()
-      console.log(result)
+      // console.log(result)
       this.userInfo = result.data.data
     },
-    hSave () {
+    async hSave () {
+      try {
+        await modUserProfile({
+          name: this.userInfo.name,
+          intro: this.userInfo.intro,
+          email: this.userInfo.email
+        })
+        this.$message.success('修改成功')
+        // 通过evevtBus发布修改名字事件，同时传递新名字
+        this.$eventBus.$emit('update_user_name', this.userInfo.name)
+      } catch {
+        this.$message.error('修改失败')
+      }
+    },
+    // 这个事件会自动的传入一个对象，其中用来表示当前要上传的信息
+    async uploadPhoto (obj) {
+      try {
+        console.dir(obj)
+        // 1.取出要上传的文件
+        const { file } = obj
+        // 2.调用接口
+        const formData = new FormData()
+        // 复习这块东西
+        formData.append('photo', file)
+        const result = await modUserImage(formData)
+        console.log(result)
+        this.$message.success('头像上传成功')
+        // 3.更新
+        this.userInfo.photo = result.data.data.photo
+        // 发布事件，通知layout更新头像
+        this.$eventBus.$emit('update_user_photo', this.userInfo.photo)
+      } catch {
+        this.$message.error('头像上传失败')
+      }
+    },
+    hTestEventBus () {
+      console.log('事件总线', this.$eventBus)
+      // 发布事件
+      this.$eventBus.$emit('aaa', {
+        a: 1,
+        b: 2
+      })
     }
   },
   ccomponents: {

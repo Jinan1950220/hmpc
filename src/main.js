@@ -22,6 +22,12 @@ Vue.use(ElementUI)
 // const b = JSONbig.parse(str)
 // console.log('jsb', b)
 // console.log(b.id.toString())
+
+// 给vue的原型对象补充一个eventBus属性
+// 属性名字是$eventBus 值是一个全新的Vue实例，用来充当事件对象
+// 如果给prototype上添加属性，则所有的实例都拥有$eventBus这个属性
+// 也就是所有的组件（组件也是Vue的实例）中都可以访问
+Vue.prototype.$eventBus = new Vue()
 new Vue({
   router,
   render: h => h(App)

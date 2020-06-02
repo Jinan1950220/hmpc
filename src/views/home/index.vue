@@ -23,6 +23,14 @@ export default {
       imgSrc: ''
     }
   },
+  created () {
+    // 在创建组件时，开始去通过eventBus监听
+    // 格式
+    console.log('aaa', this.$eventBus)
+    this.$eventBus.$on('aaa', (res) => {
+      console.log('在home组件中，收到了消息', res)
+    })
+  },
   components: {
     // MyChannels,
     // MyChannelsVmodel,

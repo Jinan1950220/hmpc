@@ -113,6 +113,15 @@ export default {
   created () {
     // 请求用户信息，显示在顶部
     this.setUserProfile()
+    // 监听事件 当在用户设置成功更新名字
+    this.$eventBus.$on('update_user_name', newName => {
+      console.log('在layout接收到uplate_user', newName)
+      this.user.name = newName
+    })
+    this.$eventBus.$on('update_user_photo', newPhoto => {
+      console.log('在layout接收到uplate_user_photo', newPhoto)
+      this.user.photo = newPhoto
+    })
   },
   mounted () { },
   methods: {
