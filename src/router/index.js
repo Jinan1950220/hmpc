@@ -1,18 +1,18 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// 導入登陸組件
-import Login from '../views/login/index.vue'
-import Home from '../views/home/index.vue'
-import Layout from '../views/layout/index.vue'
-import Article from '../views/articles/index.vue'
-import AddArticle from '../views/articles/add.vue'
-import EditArticle from '../views/articles/edit.vue'
-import Image from '../views/image/index.vue'
-import Comment from '../views/comment/index.vue'
-import Fans from '../views/fans/index.vue'
-import Settings from '../views/settings/index.vue'
-import NotFound from '../views/404/index.vue'
 import { getUser } from '../utils/storsge.js'
+// 導入登陸組件
+const Login = () => import('../views/login/index.vue')
+const Home = () => import('../views/home/index.vue')
+const Layout = () => import('../views/layout/index.vue')
+const Article = () => import('../views/articles/index.vue')
+const AddArticle = () => import('../views/articles/add.vue')
+const EditArticle = () => import('../views/articles/edit.vue')
+const Image = () => import('../views/image/index.vue')
+const Comment = () => import('../views/comment/index.vue')
+const Fans = () => import('../views/fans/index.vue')
+const Settings = () => import('../views/settings/index.vue')
+const NotFound = () => import('../views/404/index.vue')
 Vue.use(VueRouter)
 
 const routes = [
